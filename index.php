@@ -51,42 +51,61 @@ class User
 
     public function connect($login, $password)
     {
-        
-        $hash = password_hash($password, PASSWORD_BCRYPT);
-        $sql = mysqli_query($this->_conn, "SELECT login && password FROM utilisateurs WHERE login = '$login' && password = '$hash'");
-        
-        if ($sql != false) {
+        $sql = mysqli_query($this->_conn, "SELECT * FROM utilisateurs WHERE login = '$login'");
+        $erreur = false;
+
+        if ($sql != false) 
+        {
             $res = mysqli_fetch_array($sql);
 
-            if (password_verify($hash, $res['password'])) {
+            if (password_verify($password, $res['password'])) 
+            {
                 $this->_id = $res['id'];
                 $this->_login = $res['login'];
                 $this->_email = $res['email'];
                 $this->_firstname = $res['firstname'];
                 $this->_lastname = $res['lastname'];
+
+                $_SESSION['id'] = $res['id'];
+                $_SESSION['login'] = $res['login'];
+                $_SESSION['email'] = $res['email'];
+                $_SESSION['firstname'] = $res['firstname'];
+                $_SESSION['lastname'] = $res['lastname'];
+            } 
+            else 
+            {
+                $erreur = true;   
             }
+        }
+        else 
+        {
+            $erreur = true;
+        }
+        if ($erreur)
+        {
+            Echo "Votre Login/Mot de Passe est invalide";
         }
     }
 
     public function disconnect()
     {
-        session_destroy();
         session_unset($_SESSION);
+        session_destroy();
     }
 
     public function delete()
     {
 
         $id = $_SESSION['id'];
-        $delete = mysqli_query($this->_conn, "DELETE * FROM `utilisateurs` WHERE `id` = $id");
-        session_destroy();
-        session_unset($_SESSION);
+        $login = $_SESSION['login'];
+        $delete = mysqli_query($this->_conn, "DELETE * FROM utilisateurs WHERE login = '$login' && id = '$id'");
+        
     }
 
     public function update($login, $password, $email, $firstname, $lastname)
     {
         $id = $_SESSION['id'];
-        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $hash = password_hash($password, PASSWORD_DEFAULT);
 
         $login1 = $_POST['login'];
         $hash1 = $_POST['hash'];
@@ -130,5 +149,6 @@ class User
 }
 
 $user = new User();
-$connect = $user->connect("olivier", "1234");
-var_dump($user);
+$connect = $user->connect("Luc", "1234");
+var_dump($_SESSION['login']);
+$delete = $user->delete("Luc","4");
