@@ -3,9 +3,7 @@
 // Attributs (Private = peut être accessibles uniquement dans la class) 
 //           (Public = peut être accessibles depuis la classe ou depuis l'extérieur de celle-ci)
 
-
-
-class User
+class User 
 {
     private $_id;
     public  $_login;
@@ -27,7 +25,7 @@ class User
 
     public function register($login, $password, $email, $firstname, $lastname)
     {
-        $hash = password_hash($password, PASSWORD_BCRYPT);
+        $hash = password_hash($password, PASSWORD_DEFAULT);
         // Create connection
         $bdd = mysqli_connect('localhost:8889', 'root', 'root', 'classes'); 
                // Check connection
@@ -139,7 +137,37 @@ class User
     public function getLogin ()
     {
         $id_session = $_SESSION['id'];
-        $sql = mysqli_query($this->_conn, "SELECT `login` FROM `utilisateurs`");
+        $sql = mysqli_query($this->_conn, "SELECT `login` FROM `utilisateurs` WHERE id =='$id_session'");
+
+        if (isset($_SESSION['id']) != false) 
+        {
+            return array($sql);
+        }
+    }
+    public function getEmail ()
+    {
+        $id_session = $_SESSION['id'];
+        $sql = mysqli_query($this->_conn, "SELECT `email` FROM `utilisateurs` WHERE id =='$id_session'");
+
+        if (isset($_SESSION['id']) != false) 
+        {
+            return array($sql);
+        }
+    }
+    public function getFirstname ()
+    {
+        $id_session = $_SESSION['id'];
+        $sql = mysqli_query($this->_conn, "SELECT `firstname` FROM `utilisateurs` WHERE id =='$id_session'");
+
+        if (isset($_SESSION['id']) != false) 
+        {
+            return array($sql);
+        }
+    }
+    public function getLastname ()
+    {
+        $id_session = $_SESSION['id'];
+        $sql = mysqli_query($this->_conn, "SELECT * FROM `lastname` WHERE id =='$id_session'");
 
         if (isset($_SESSION['id']) != false) 
         {
@@ -147,8 +175,5 @@ class User
         }
     }
 }
-
-$user = new User();
-$connect = $user->connect("Luc", "1234");
-var_dump($_SESSION['login']);
-$delete = $user->delete("Luc","4");
+$this->_conn = $bdd;
+var_dump($bdd);
